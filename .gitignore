@@ -1,0 +1,22 @@
+# Secrets et état — jamais versionnés
+.env
+data/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
+
+# Outillage interne Freebuff
+.freebuff/
+
+# Compilation de l'app
+build/
+
+# Éditeurs
+.idea/
+.vscode/
