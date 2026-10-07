@@ -195,6 +195,55 @@ class TestImapPresets(unittest.TestCase):
         cfg = self._load({})
         self.assertEqual(cfg.imap_host, "imap.mail.me.com")
 
+    def test_every_preset_resolves_to_a_real_host(self):
+        """Couvre les 10 presets d'un coup : une faute de frappe dans le
+        tableau serait ignorée par les tests de cas particuliers."""
+        from mailbrief.config import IMAP_PRESETS
+
+        attendus = {
+            "icloud": "imap.mail.me.com",
+            "gmail": "imap.gmail.com",
+            "outlook": "outlook.office365.com",
+            "yahoo": "imap.mail.yahoo.com",
+            "free": "imap.free.fr",
+            "orange": "ssl0.orange.net",
+            "sfr": "imap.sfr.fr",
+            "laposte": "imap.laposte.net",
+            "proton": "127.0.0.1",
+            "custom": "",
+        }
+        self.assertEqual(set(IMAP_PRESETS), set(attendus),
+                         "un preset a été ajouté/retiré sans mettre le test à jour")
+        for name, host in attendus.items():
+            with self.subTest(preset=name):
+                env = {"IMAP_PRESET": name}
+                if name == "custom":
+                    # custom n'a pas d'hôte prédéfini : on fournit le sien.
+                    env["IMAP_HOST"] = "imap.example.org"
+                    host = "imap.example.org"
+                cfg = self._load(env)
+                self.assertEqual(cfg.imap_host, host)
+                self.assertGreater(cfg.imap_port, 0)
+
+    def test_preset_hosts_match_the_readme_table(self):
+        """Le README promet ces hôtes : on ne veut pas qu'ils divergent."""
+        import re
+        from pathlib import Path
+        from mailbrief.config import IMAP_PRESETS
+
+        root = Path(__file__).resolve().parent.parent
+        for readme in (root / "README.md", root / "README.fr.md"):
+            text = readme.read_text(encoding="utf-8")
+            rows = re.findall(
+                r"\|\s*`([a-z]+)`\s*\|[^\n]*\|\s*([^|\n]+?)\s*\|", text
+            )
+            declared = {name for name, _ in rows}
+            self.assertTrue(
+                declared.issubset(set(IMAP_PRESETS)),
+                f"{readme.name} cite un preset inconnu : "
+                f"{declared - set(IMAP_PRESETS)}",
+            )
+
 
 class TestNormalize(unittest.TestCase):
     def test_missing_uid_is_added_as_info(self):

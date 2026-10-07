@@ -206,7 +206,7 @@ tests/                 tests unitaires + intégration CLI
 .venv/bin/python -m unittest discover -s tests
 ```
 
-47 tests : rendu Telegram, découpage sous 4096, priorités, JSON, lots de
+49 tests : rendu Telegram, découpage sous 4096, priorités, JSON, lots de
 contexte, MIME/encodage, état, presets IMAP, et le CLI (un `--dry-run` ne
 doit jamais consommer les mails, un échec doit alerter sans valider l'état).
 

@@ -203,7 +203,7 @@ tests/                 unit + CLI integration tests
 .venv/bin/python -m unittest discover -s tests
 ```
 
-47 tests: Telegram rendering, 4096-char splitting, priorities, JSON, context
+49 tests: Telegram rendering, 4096-char splitting, priorities, JSON, context
 batching, MIME/encoding, state, IMAP presets, and the CLI (a `--dry-run` must
 never consume mails; a failure must alert without committing state).
 
