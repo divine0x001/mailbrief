@@ -218,6 +218,7 @@ never consume mails; a failure must alert without committing state).
 | `token repeat limit reached` | too many mails per batch — lower `MAX_BODY_CHARS` or `MAX_MAILS` |
 | `Telegram 409: chat not found` | bot never contacted, or wrong `TELEGRAM_CHAT_ID` |
 | `UIDVALIDITY changed` | mailbox rebuilt by the provider — harmless |
+| `Operation not permitted` in `data/launchd.err.log` (job exit `126`) | macOS TCC blocks `~/Documents` to shell jobs — re-run `./install_schedule.sh 8 0`, which schedules the **app** instead of `/bin/bash` |
 | Nothing arrives | `tail -f data/launchd.err.log`, or check the Telegram alert |
 | Missing icon (macOS) | `launchctl kickstart -k gui/$(id -u)/com.mailbrief.app` |
 

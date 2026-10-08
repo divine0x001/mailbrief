@@ -17,6 +17,22 @@ fi
 chmod +x "$PROJECT/scripts/run.sh"
 mkdir -p "$HOME/Library/LaunchAgents" "$PROJECT/data"
 
+# macOS protège ~/Documents par TCC. Un processus lancé par launchd sans
+# identité d'application (ex. /bin/bash) ne peut pas en LIRE le contenu :
+# « Operation not permitted », exit 126 — le job échoue silencieusement
+# tous les jours. On passe donc par l'application, qui porte un bundle
+# identifié et dont les processus enfants héritent des droits. Son mode
+# `--run` exécute exactement le même scripts/run.sh que le menu.
+APP="$HOME/Applications/MailBrief.app/Contents/MacOS/MailBrief"
+if [[ -x "$APP" ]]; then
+  PROGRAM_RUNNER=("$APP" --run)
+  echo "🖥️  moteur : $APP --run"
+else
+  PROGRAM_RUNNER=(/bin/bash "$PROJECT/scripts/run.sh")
+  echo "⚠️  moteur : $PROJECT/scripts/run.sh (app absente, droits TCC possibles)"
+fi
+printf -v PROGRAM_ARGS '    <string>%s</string>\n' "${PROGRAM_RUNNER[@]}"
+
 # Recharge proprement un éventuel service déjà installé.
 launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null || true
 
@@ -30,9 +46,7 @@ cat > "$PLIST" <<EOF
   <string>$LABEL</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/bin/bash</string>
-    <string>$PROJECT/scripts/run.sh</string>
-  </array>
+$PROGRAM_ARGS  </array>
   <key>StartCalendarInterval</key>
   <dict>
     <key>Hour</key><integer>$HOUR</integer>

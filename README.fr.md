@@ -221,6 +221,7 @@ doit jamais consommer les mails, un échec doit alerter sans valider l'état).
 | `token repeat limit reached` | trop de mails par lot — baisse `MAX_BODY_CHARS` ou `MAX_MAILS` |
 | `Telegram 409: chat not found` | bot jamais contacté, ou `TELEGRAM_CHAT_ID` faux |
 | `UIDVALIDITY a changé` | boîte reconstruite par le fournisseur — bénin |
+| `Operation not permitted` dans `data/launchd.err.log` (job en exit `126`) | TCC de macOS bloque `~/Documents` aux jobs shell — relance `./install_schedule.sh 8 0`, qui planifie l'**app** plutôt que `/bin/bash` |
 | Rien ne part | `tail -f data/launchd.err.log`, ou regarde l'alerte Telegram |
 | Icône absente (macOS) | `launchctl kickstart -k gui/$(id -u)/com.mailbrief.app` |
 
